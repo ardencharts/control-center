@@ -1,0 +1,695 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+}
+
+model Calendar {
+  id        Int       @id @unique @default(autoincrement())
+  key       String
+  day       String
+  time      String
+  timestamp DateTime?
+  currency  String
+  impact    String
+  title     String
+  actual    String
+  forecast  String
+  previous  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  deleted   Boolean   @default(false)
+
+  @@index([currency, impact, day, time])
+}
+
+model ChartDataMetaInfo {
+  id         Int       @id @unique @default(autoincrement())
+  timestamp  DateTime  @default(now())
+  symbol     String
+  resolution Int       @default(1)
+  content    String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime?
+  deleted    Boolean   @default(false)
+  client     String
+  user       String
+  name       String
+  public     Boolean   @default(false)
+
+  @@index([client, user])
+}
+
+model ChartDrawing {
+  id          String   @id
+  userId      String
+  exchange    String
+  symbol      String
+  interval    String
+  drawingType String
+  points      Json
+  color       String   @default("#000000")
+  lineWidth   Int      @default(2)
+  lineStyle   String   @default("solid")
+  lineSpacing Int      @default(0)
+  text        String?
+  fontSize    Int?
+  textWidth   Int?
+  textHeight  Int?
+  isComplete  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  deleted     Boolean  @default(false)
+
+  @@unique([id, userId])
+  @@index([userId, createdAt])
+  @@index([userId, exchange, symbol, interval])
+}
+
+model ChartLayout {
+  id              String   @id
+  userId          String
+  name            String
+  description     String?
+  isDefault       Boolean  @default(false)
+  chartPanels     Json
+  indicators      Json?
+  theme           String?
+  timeframe       String?
+  symbols         Json?
+  gridLayout      Json?
+  isPublic        Boolean  @default(false)
+  sharedWithUsers String[] @default([])
+  tags            String[] @default([])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+  deleted         Boolean  @default(false)
+
+  @@unique([userId, name])
+  @@index([isPublic])
+  @@index([userId, createdAt])
+  @@index([userId, isDefault])
+}
+
+model CoinMarketCap {
+  id                Int       @id @default(autoincrement())
+  symbol            String    @unique
+  name              String
+  slug              String
+  rank              Int
+  price             Decimal   @default(0)
+  volume24h         Decimal   @default(0)
+  marketCap         Decimal   @default(0)
+  percentChange1h   Float     @default(0)
+  percentChange24h  Float     @default(0)
+  percentChange7d   Float     @default(0)
+  lastUpdate        DateTime
+  circulatingSupply Decimal   @default(0)
+  maxSupply         Decimal   @default(0)
+  totalSupply       Decimal   @default(0)
+  infiniteSupply    Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime?
+  deleted           Boolean   @default(false)
+  description       String?   @default("")
+}
+
+model Earning {
+  id              Int       @id @unique @default(autoincrement())
+  key             String
+  date            DateTime
+  epsActual       Float?
+  epsEstimate     Float?
+  hour            String
+  quarter         Int
+  revenueActual   Float?
+  revenueEstimate Float?
+  symbol          String
+  year            Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime?
+  deleted         Boolean   @default(false)
+
+  @@index([symbol, date])
+}
+
+model Earnings {
+  id                       Int       @id @default(autoincrement())
+  ticker                   String
+  earnings_id              String    @unique
+  company_name             String?
+  report_date              DateTime?
+  fiscal_period            String?
+  fiscal_year              Int?
+  actual_eps               Float?
+  estimated_eps            Float?
+  surprise_eps             Float?
+  surprise_eps_percent     Float?
+  actual_revenue           BigInt?
+  estimated_revenue        BigInt?
+  surprise_revenue         BigInt?
+  surprise_revenue_percent Float?
+  updated_date             DateTime?
+  reporting_status         String?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime?
+  deleted                  Boolean   @default(false)
+
+  @@index([fiscal_year, fiscal_period])
+  @@index([report_date])
+  @@index([ticker])
+}
+
+model EquityAddress {
+  id          Int       @id @default(autoincrement())
+  address1    String?   @default("NA")
+  address2    String?   @default("NA")
+  city        String?   @default("NA")
+  state       String?   @default("NA")
+  postal_code String?   @default("NA")
+  country     String?   @default("NA")
+  ticker      String    @unique
+  lastUpdate  DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime?
+  deleted     Boolean   @default(false)
+
+  @@index([ticker])
+}
+
+model EquityBranding {
+  id         Int       @id @default(autoincrement())
+  logo_url   String?   @default("NA")
+  icon_url   String?   @default("NA")
+  ticker     String    @unique
+  lastUpdate DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime?
+  deleted    Boolean   @default(false)
+
+  @@index([ticker])
+}
+
+model EquityDetails {
+  id                             Int       @id @default(autoincrement())
+  active                         Boolean?  @default(false)
+  cik                            String?   @default("NA")
+  composite_figi                 String?   @default("NA")
+  currency_name                  String?   @default("NA")
+  delisted_utc                   String?   @default("NA")
+  description                    String?   @default("NA")
+  homepage_url                   String?   @default("NA")
+  list_date                      String?   @default("NA")
+  locale                         String?   @default("NA")
+  market                         String?   @default("NA")
+  market_cap                     Decimal?  @default(0)
+  name                           String?   @default("NA")
+  phone_number                   String?   @default("NA")
+  primary_exchange               String?   @default("NA")
+  round_lot                      Decimal?  @default(0)
+  share_class_figi               String?   @default("NA")
+  share_class_shares_outstanding Decimal?  @default(0)
+  sic_code                       String?   @default("NA")
+  sic_description                String?   @default("NA")
+  ticker                         String    @unique
+  ticker_root                    String?   @default("NA")
+  ticker_suffix                  String?   @default("NA")
+  total_employees                Decimal?  @default(0)
+  type                           String?   @default("NA")
+  weighted_shares_outstanding    Decimal?  @default(0)
+  status                         String?   @default("NA")
+  createdAt                      DateTime  @default(now())
+  updatedAt                      DateTime?
+  deleted                        Boolean   @default(false)
+}
+
+model EquityDividend {
+  id               String    @id
+  ticker           String
+  dividend_id      String    @unique
+  cash_amount      Float
+  currency         String?
+  declaration_date DateTime?
+  dividend_type    String
+  ex_dividend_date DateTime
+  frequency        Int
+  pay_date         DateTime?
+  record_date      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime?
+  deleted          Boolean   @default(false)
+
+  @@index([ticker, ex_dividend_date])
+}
+
+model EquityFinancialReport {
+  id               String    @id
+  key              String    @unique
+  ticker           String
+  cik              String
+  companyName      String
+  filingDate       DateTime
+  reportDate       DateTime
+  fiscalPeriod     String
+  fiscalYear       Int
+  sourceUrl        String
+  netIncome        Float?
+  totalRevenue     Float?
+  grossProfit      Float?
+  totalAssets      Float?
+  totalLiabilities Float?
+  equity           Float?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime?
+  deleted          Boolean   @default(false)
+}
+
+model EquitySplit {
+  id             String    @id
+  ticker         String
+  split_id       String    @unique
+  execution_date DateTime
+  split_from     Float
+  split_to       Float
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deleted        Boolean   @default(false)
+
+  @@index([ticker, execution_date])
+}
+
+model EquityTicker {
+  id               Int       @id @default(autoincrement())
+  active           Boolean   @default(true)
+  cik              String    @default("NA")
+  composite_figi   String    @default("NA")
+  currency_name    String    @default("NA")
+  last_updated_utc DateTime  @default(now())
+  locale           String    @default("NA")
+  market           String    @default("NA")
+  name             String    @default("NA")
+  primary_exchange String    @default("NA")
+  share_class_figi String    @default("NA")
+  ticker           String    @unique
+  type             String    @default("NA")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime?
+  deleted          Boolean   @default(false)
+
+  @@index([ticker, type, market])
+}
+
+model EquityType {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  description String    @default("NA")
+  asset_class String    @default("NA")
+  locale      String    @default("NA")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime?
+  deleted     Boolean   @default(false)
+
+  @@index([code, locale])
+}
+
+model History {
+  id         Int       @id @default(autoincrement())
+  exchange   String    @default("NA")
+  symbol     String    @default("NA")
+  startDate  DateTime
+  endDate    DateTime
+  lastUpdate DateTime
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime?
+  deleted    Boolean   @default(false)
+
+  @@index([exchange, symbol])
+}
+
+model MarketHoliday {
+  id         String    @id
+  date       DateTime
+  exchange   String
+  name       String
+  status     String
+  open_time  String?
+  close_time String?
+  key        String    @unique
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime?
+  deleted    Boolean   @default(false)
+
+  @@index([date, exchange])
+}
+
+model MarketSnapshot {
+  id                           Int       @id @default(autoincrement())
+  ticker                       String    @unique
+  market_status                String?
+  fmv                          Float?
+  day_change                   Float?
+  day_change_percent           Float?
+  early_trading_change         Float?
+  early_trading_change_percent Float?
+  last_quote_time              BigInt?
+  last_trade_time              BigInt?
+  min_todayc                   Float?
+  max_todayc                   Float?
+  prev_day_close               Float?
+  updated_timestamp            BigInt?
+  volume                       BigInt?
+  createdAt                    DateTime  @default(now())
+  updatedAt                    DateTime?
+  deleted                      Boolean   @default(false)
+
+  @@index([ticker, updated_timestamp])
+}
+
+model MarketStatus {
+  id               Int       @id @default(autoincrement())
+  type             String    @unique
+  session          String    @default("CLOSE")
+  dailyOpen        DateTime  @default(now())
+  dailyClose       DateTime  @default(now())
+  preMarketOpen    DateTime  @default(now())
+  marketOpen       DateTime  @default(now())
+  marketClose      DateTime  @default(now())
+  afterMarketClose DateTime  @default(now())
+  lastUpdate       DateTime
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime?
+  deleted          Boolean   @default(false)
+}
+
+model Portfolio {
+  id               String             @id
+  userId           String
+  name             String
+  description      String?
+  isDefault        Boolean            @default(false)
+  currency         String             @default("USD")
+  totalValue       Decimal            @default(0)
+  totalCost        Decimal            @default(0)
+  totalGain        Decimal            @default(0)
+  totalReturn      Decimal            @default(0)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  deleted          Boolean            @default(false)
+  PortfolioHolding PortfolioHolding[]
+
+  @@unique([userId, name])
+  @@index([userId, createdAt])
+  @@index([userId, isDefault])
+}
+
+model PortfolioHolding {
+  id               String    @id
+  portfolioId      String
+  exchange         String
+  symbol           String
+  assetType        String
+  quantity         Decimal
+  averagePrice     Decimal
+  currentPrice     Decimal   @default(0)
+  purchaseDate     DateTime
+  purchaseNotes    String?
+  totalCost        Decimal
+  currentValue     Decimal   @default(0)
+  unrealizedGain   Decimal   @default(0)
+  unrealizedReturn Decimal   @default(0)
+  lastPriceUpdate  DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime
+  deleted          Boolean   @default(false)
+  Portfolio        Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@unique([portfolioId, exchange, symbol])
+  @@index([assetType])
+  @@index([exchange, symbol])
+  @@index([portfolioId])
+}
+
+model PortfolioTransaction {
+  id              String   @id
+  portfolioId     String
+  exchange        String
+  symbol          String
+  assetType       String
+  type            String
+  quantity        Decimal
+  price           Decimal
+  commission      Decimal  @default(0)
+  totalAmount     Decimal
+  transactionDate DateTime
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+  deleted         Boolean  @default(false)
+
+  @@index([portfolioId])
+  @@index([portfolioId, symbol])
+  @@index([transactionDate])
+  @@index([type])
+}
+
+model PriceAlert {
+  id           String    @id
+  userId       String
+  exchange     String
+  symbol       String
+  targetPrice  Decimal
+  condition    String
+  enabled      Boolean   @default(true)
+  triggered    Boolean   @default(false)
+  triggeredAt  DateTime?
+  triggerPrice Decimal?
+  message      String?
+  soundEnabled Boolean   @default(true)
+  emailEnabled Boolean   @default(false)
+  pushEnabled  Boolean   @default(false)
+  repeatAlert  Boolean   @default(false)
+  expiresAt    DateTime?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime
+  deleted      Boolean   @default(false)
+
+  @@index([exchange, symbol, enabled])
+  @@index([triggeredAt])
+  @@index([userId, createdAt])
+  @@index([userId, enabled, triggered])
+}
+
+model ShortInterest {
+  id                    Int       @id @default(autoincrement())
+  ticker                String
+  market                String?
+  settlement_date       DateTime
+  short_interest        BigInt?
+  short_interest_change BigInt?
+  short_interest_ratio  Float?
+  days_to_cover         Float?
+  revision_flag         Boolean?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime?
+  deleted               Boolean   @default(false)
+
+  @@unique([ticker, settlement_date])
+  @@index([ticker, settlement_date])
+}
+
+model ShortVolume {
+  id                   Int       @id @default(autoincrement())
+  ticker               String
+  market               String?
+  date                 DateTime
+  short_volume         BigInt?
+  short_exempt_volume  BigInt?
+  total_volume         BigInt?
+  short_volume_percent Float?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime?
+  deleted              Boolean   @default(false)
+
+  @@unique([ticker, market, date])
+  @@index([date])
+  @@index([ticker, date])
+}
+
+model StudyTemplateDataMetaInfo {
+  id        Int       @id @default(autoincrement())
+  name      String
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  deleted   Boolean   @default(false)
+  client    String
+  user      String
+  public    Boolean   @default(false)
+
+  @@unique([name, user, client])
+  @@index([client, user])
+}
+
+model Ticker {
+  id                 Int       @id @default(autoincrement())
+  key                String    @unique
+  symbol             String    @default("NA")
+  exchange           String    @default("NA")
+  type               String    @default("NA")
+  timestamp          DateTime  @default(now())
+  epoch              BigInt    @default(0)
+  bidPrice           Decimal   @default(0)
+  askPrice           Decimal   @default(0)
+  spread             Decimal   @default(0)
+  marketOpenDate     DateTime  @default(now())
+  marketCloseDate    DateTime  @default(now())
+  dailyOpenPrice     Decimal   @default(0)
+  dailyChange        Decimal   @default(0)
+  dailyPercentChange Decimal   @default(0)
+  session            String    @default("CLOSE")
+  lastUpdate         DateTime
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime?
+  deleted            Boolean   @default(false)
+}
+
+model TickerSubscription {
+  id            Int       @id @default(autoincrement())
+  key           String    @unique
+  enabled       Boolean   @default(true)
+  symbol        String    @default("NA")
+  marketSymbol  String    @default("NA")
+  exchange      String    @default("NA")
+  type          String    @default("NA")
+  description   String    @default("NA")
+  name          String    @default("NA")
+  base          String    @default("NA")
+  quote         String    @default("NA")
+  tradable      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime?
+  deleted       Boolean   @default(false)
+  subType       String    @default("")
+  change        Decimal?
+  changePercent Decimal?
+  last          Decimal?
+  volume        Decimal?
+
+  @@index([symbol, exchange, type])
+}
+
+model UserAlertPreferences {
+  id                   String   @id
+  userId               String   @unique
+  soundEnabled         Boolean  @default(true)
+  emailEnabled         Boolean  @default(false)
+  pushEnabled          Boolean  @default(false)
+  defaultSoundType     String   @default("beep")
+  soundVolume          Float    @default(0.8)
+  emailOnTrigger       Boolean  @default(false)
+  emailOnExpiry        Boolean  @default(false)
+  maxAlertsPerSymbol   Int      @default(10)
+  autoDeleteTriggered  Boolean  @default(false)
+  autoDeleteExpired    Boolean  @default(true)
+  repeatDelayMinutes   Int      @default(5)
+  quietHoursEnabled    Boolean  @default(false)
+  quietHoursStart      String?
+  quietHoursEnd        String?
+  weekendAlertsEnabled Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime
+
+  @@index([userId])
+}
+
+model UserDrawingPreferences {
+  id                  String   @id
+  userId              String   @unique
+  defaultDrawingColor String   @default("#2563eb")
+  defaultLineWidth    Int      @default(2)
+  defaultLineStyle    String   @default("solid")
+  defaultLineSpacing  Int      @default(0)
+  defaultFontSize     Int      @default(14)
+  magnetModeEnabled   Boolean  @default(true)
+  continuousDrawing   Boolean  @default(false)
+  showDrawingToolbar  Boolean  @default(true)
+  drawingOpacity      Float    @default(1.0)
+  snapToPrice         Boolean  @default(true)
+  snapToTime          Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime
+
+  @@index([userId])
+}
+
+model UserPreference {
+  id               Int       @id @unique @default(autoincrement())
+  user             String
+  username         String
+  email            String
+  client           String
+  currentSymbol    String
+  currentTimeframe Int
+  themeMode        String
+  themeStretch     String
+  themeContrast    String
+  themeDirection   String
+  themeColorPreset String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime?
+  deleted          Boolean   @default(false)
+
+  @@index([client, user])
+}
+
+model Watchlist {
+  id            String          @id
+  userId        String
+  name          String
+  description   String?
+  isDefault     Boolean         @default(false)
+  isPublic      Boolean         @default(false)
+  tags          String[]        @default([])
+  sortOrder     Int             @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  deleted       Boolean         @default(false)
+  WatchlistItem WatchlistItem[]
+
+  @@unique([userId, name])
+  @@index([userId, createdAt])
+  @@index([userId, isDefault])
+  @@index([userId, sortOrder])
+}
+
+model WatchlistItem {
+  id            String    @id
+  watchlistId   String
+  exchange      String
+  symbol        String
+  displayName   String?
+  notes         String?
+  sortOrder     Int       @default(0)
+  alertsEnabled Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
+  deleted       Boolean   @default(false)
+  Watchlist     Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+
+  @@unique([watchlistId, exchange, symbol])
+  @@index([exchange, symbol])
+  @@index([watchlistId, sortOrder])
+}
