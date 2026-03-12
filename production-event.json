@@ -1,0 +1,11 @@
+{
+  "ref": "refs/heads/7.0.0",
+  "repository": {
+    "name": "dashboard",
+    "full_name": "ardencharts/dashboard",
+    "owner": {
+      "name": "ardencharts",
+      "login": "ardencharts"
+    }
+  }
+}
