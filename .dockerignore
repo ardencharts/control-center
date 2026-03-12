@@ -1,0 +1,6 @@
+.next
+.git
+.github
+.env
+.dockerignore
+node_modules
