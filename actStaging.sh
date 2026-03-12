@@ -1,0 +1,1 @@
+act --secret-file .secrets push -e staging-event.json --rm

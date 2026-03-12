@@ -1,0 +1,1 @@
+act --secret-file .secrets push -e production-event.json --rm
