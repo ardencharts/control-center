@@ -674,15 +674,20 @@ export default function Dashboard() {
                 Filter by Field
               </Box>
               <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 1, mb: 2 }}>
-                <TextField
-                  size="small"
-                  placeholder="Filter by Enabled..."
-                  value={filterEnabled}
-                  onChange={(e) => {
-                    setFilterEnabled(e.target.value);
-                    setTablePage(0);
-                  }}
-                />
+                <FormControl size="small" sx={{ minWidth: 120 }}>
+                  <Select
+                    value={filterEnabled}
+                    onChange={(e) => {
+                      setFilterEnabled(e.target.value);
+                      setTablePage(0);
+                    }}
+                    displayEmpty
+                  >
+                    <MenuItem value="">All</MenuItem>
+                    <MenuItem value="true">True</MenuItem>
+                    <MenuItem value="false">False</MenuItem>
+                  </Select>
+                </FormControl>
                 <TextField
                   size="small"
                   placeholder="Filter by Symbol..."
