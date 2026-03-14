@@ -69,8 +69,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Per-field filters (AND)
-    if (filterEnabled) {
-      const enabledValue = filterEnabled.toLowerCase() === "yes" || filterEnabled.toLowerCase() === "true";
+    if (filterEnabled && filterEnabled !== "") {
+      const enabledValue = filterEnabled === "true";
       whereConditions.push({ enabled: enabledValue });
     }
     if (filterSymbol) {
